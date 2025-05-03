@@ -1,0 +1,6 @@
+node_modules/
+.env
+temp_*
+archivo-temporal*
+*.http
+dist
