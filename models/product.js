@@ -14,6 +14,10 @@ const ProductSchema = new mongoose.Schema(
             type: Number,
             required: true
         },
+        discount: {
+            type: Number, // porcentaje: 0-100
+            default: 0
+        },
         stock: {
             type: Number,
             default: 0
@@ -33,6 +37,14 @@ const ProductSchema = new mongoose.Schema(
                 url: String,
                 alt: String
             }
+        ],
+        reviews: [
+            {
+                user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+                rating: { type: Number, min: 1, max: 5 },
+                comment: String,
+                createdAt: { type: Date, default: Date.now }
+            }
         ]
     },
     {
@@ -40,5 +52,5 @@ const ProductSchema = new mongoose.Schema(
     }
 );
 
-ProductoSchema.plugin(mongooseDelete, { overrideMethods: 'all' });
+ProductSchema.plugin(mongooseDelete, { overrideMethods: 'all' });
 module.exports = mongoose.model('product', ProductSchema);

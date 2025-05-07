@@ -1,14 +1,14 @@
 module.exports = {
     type: 'object',
-    required: ['email, password'],
+    required: ['email', 'code'],
     properties: {
         email: {
             type: 'string',
-            example: 'a.car@immune.com'
+            example: 'a.car@gmail.com'
         },
-        password: {
+        code: {
             type: 'string',
-            example: 'Contra3$.12'
+            example: '000000'
         }
     }
 };

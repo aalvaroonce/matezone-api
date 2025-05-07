@@ -1,22 +1,22 @@
 module.exports = {
-    type: "object", 
-    required: ["email, password, name, surnames, nif, keys"],
+    type: 'object',
+    required: ['email, password, name, surnames, nif, keys'],
     properties: {
         email: {
-            type: "string", 
-            example: "alejandro@gmail.com"
+            type: 'string',
+            example: 'a.car@immune.es'
         },
         password: {
-            type: "string",
-            example: "A123456789!"
+            type: 'string',
+            example: 'Contra3$.12'
         },
         name: {
-            type: "string", 
-            example: "Alejandro"
+            type: 'string',
+            example: 'Alejandro'
         },
         surnames: {
-            type: "string",
-            example: "Pepe Gonzalez"
+            type: 'string',
+            example: 'Gonzalez'
         }
     }
-}
+};

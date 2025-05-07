@@ -28,18 +28,25 @@ const UserScheme = new mongoose.Schema(
             type: String,
             select: false
         },
+        status: {
+            type: Number,
+            default: 0
+        },
         role: {
             type: String,
             enum: ['user', 'admin'],
             default: 'user'
         },
-        address: {
-            street: String,
-            number: String,
-            postal: String,
-            city: String,
-            province: String
-        },
+        address: [
+            {
+                nombre: String,
+                street: String,
+                number: String,
+                postal: String,
+                city: String,
+                province: String
+            }
+        ],
         notifications: {
             type: Boolean,
             default: false
