@@ -33,7 +33,7 @@ const validatorRegister = [
         .matches(/[a-z]/)
         .matches(/[0-9]/)
         .matches(/[!@#$%^&*(),.?":{}|<>]/),
-    ,
+    check('phoneNumber').exists().notEmpty().isMobilePhone(),
     (req, res, next) => {
         return validateResults(req, res, next);
     }

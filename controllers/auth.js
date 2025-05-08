@@ -4,6 +4,8 @@ const { encrypt, compare } = require('../utils/handlePassword');
 const { generateVerificationCode, sendEmail } = require('../utils/handleMails');
 const { handleHttpError } = require('../utils/handleError');
 const { userModel } = require('../models');
+const path = require('path');
+const fs = require('fs');
 
 const registerCtrl = async (req, res) => {
     try {
