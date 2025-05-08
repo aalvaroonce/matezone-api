@@ -40,6 +40,7 @@ const options = {
                 userRegister: require('../schemas/usersRegister'),
                 userDataLogin: require('../schemas/userDataLogin'),
                 userData: require('../schemas/userData'),
+                userUpdate: require('../schemas/userUpdate'),
                 mailCode: require('../schemas/mailCode'),
                 mailRecover: require('../schemas/mailRecover')
             }

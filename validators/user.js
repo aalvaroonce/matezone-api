@@ -69,10 +69,64 @@ const validatorEmail = [
     }
 ];
 
+const validatorChangePassword = [
+    check('currentPassword')
+        .exists()
+        .withMessage('La contraseña es obligatoria')
+        .notEmpty()
+        .withMessage('El campo contraseña no puede estar vacío')
+        .isLength({ min: 8, max: 64 })
+        .withMessage('La contraseña debe tener entre 8 y 64 caracteres')
+        .matches(/[A-Z]/)
+        .withMessage('La contraseña debe contener al menos una letra mayúscula')
+        .matches(/[a-z]/)
+        .withMessage('La contraseña debe contener al menos una letra minúscula')
+        .matches(/[0-9]/)
+        .withMessage('La contraseña debe contener al menos un número')
+        .matches(/[!@#$%^&*(),.?":{}|<>]/)
+        .withMessage('La contraseña debe contener al menos un carácter especial'),
+
+    check('newPassword')
+        .exists()
+        .withMessage('La contraseña es obligatoria')
+        .notEmpty()
+        .withMessage('El campo contraseña no puede estar vacío')
+        .isLength({ min: 8, max: 64 })
+        .withMessage('La contraseña debe tener entre 8 y 64 caracteres')
+        .matches(/[A-Z]/)
+        .withMessage('La contraseña debe contener al menos una letra mayúscula')
+        .matches(/[a-z]/)
+        .withMessage('La contraseña debe contener al menos una letra minúscula')
+        .matches(/[0-9]/)
+        .withMessage('La contraseña debe contener al menos un número')
+        .matches(/[!@#$%^&*(),.?":{}|<>]/)
+        .withMessage('La contraseña debe contener al menos un carácter especial'),
+
+    (req, res, next) => {
+        return validateResults(req, res, next);
+    }
+];
+
+const validatorGetUser = [
+    check('id').exists().notEmpty().isMongoId(),
+    (req, res, next) => validateResults(req, res, next)
+];
+
+const validatorUpdate = [
+    check('email').optional(),
+    check('name').optional(),
+    check('surnames').optional(),
+    check('notifications').optional(),
+    (req, res, next) => validateResults(req, res, next)
+];
+
 module.exports = {
     validatorRegister,
     validatorLogin,
     validatorEmailCode,
     validatorEmailRecover,
-    validatorEmail
+    validatorEmail,
+    validatorChangePassword,
+    validatorGetUser,
+    validatorUpdate
 };

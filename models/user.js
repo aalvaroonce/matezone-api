@@ -47,9 +47,8 @@ const UserScheme = new mongoose.Schema(
                 province: String
             }
         ],
-        notifications: {
-            type: Boolean,
-            default: false
+        urlToAvatar: {
+            type: String
         }
     },
     {
