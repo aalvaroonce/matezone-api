@@ -54,7 +54,7 @@ const router = express.Router();
  *     security:
  *       - bearerAuth: []
  */
-router.get('/profile', authMiddleware, validatorGetUser, getUser);
+router.get('/profile', authMiddleware, getUser);
 
 /**
  * @openapi
@@ -326,7 +326,7 @@ router.patch('/restore/:id', authMiddleware, checkRol(['admin']), validatorGetUs
  * /api/user/addimage:
  *  patch:
  *      tags:
- *      - user
+ *      - User
  *      summary: Add an image to a user
  *      description: Adds an image to the image array of the specified user by its CIF
  *      requestBody:

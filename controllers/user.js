@@ -7,13 +7,12 @@ const { handleHttpError } = require('../utils/handleError');
 const getUser = async (req, res) => {
     try {
         const userId = req.user._id;
-        const data = await userModel.findById(userId);
+        const data = await userModel.findById(userId).select('-attempt -status -role -emailCode');
         if (!data) {
             handleHttpError(res, 'USER_NOT_FOUND', 404);
             return;
         }
-        const role = data.role === 'user' ? 'employee' : data.role;
-        data.set('permissions', roles[role], { strict: false });
+
         res.send(data);
     } catch (err) {
         handleHttpError(res, 'ERROR_GETTING_USER');
@@ -27,7 +26,7 @@ const updateUser = async (req, res) => {
         const body = matchedData(req);
 
         const data = await userModel
-            .findByIdAndUpdate(id, body, {
+            .updateOne({ _id: id }, body, {
                 new: true
             })
             .select('-password');
@@ -43,14 +42,15 @@ const changePassword = async (req, res) => {
 
     try {
         // Intentar encontrar un usuario por email en userModel
-        let user = await userModel.findOne({ _id: id });
+        let user = await userModel.findOne({ _id: id }).select('+password');
 
         // Si no encuentra un usuario, buscar en userModel
         if (!user) {
             return res.status(404).send({ message: 'USER_NOT_EXISTS' });
         }
-
+        console.log(user);
         const hashPassword = user.password;
+        console.log(currentPassword, hashPassword);
         const isPasswordValid = await compare(currentPassword, hashPassword);
 
         if (!isPasswordValid) {
@@ -81,8 +81,8 @@ const addImage = async (req, res) => {
         const pinataResponse = await uploadToPinata(fileBuffer, fileName, userId);
         const ipfsFile = pinataResponse.IpfsHash;
         const ipfs = `https://${process.env.PINATA_GATEWAY_URL}/ipfs/${ipfsFile}`;
-        const data = await userModel.findByIdAndUpdate(
-            userId,
+        const data = await userModel.updateOne(
+            { _id: userId },
             { urlToAvatar: ipfs },
             { new: true }
         );

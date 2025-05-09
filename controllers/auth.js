@@ -70,9 +70,7 @@ const loginCtrl = async (req, res) => {
 
         const user = await userModel
             .findOne({ email: req.email })
-            .select(
-                'password name role email status nif company needCompleteOnboarding onboardingStep'
-            );
+            .select('password name role email');
 
         if (!user) {
             handleHttpError(res, 'USER_NOT_EXIST', 404);
@@ -93,10 +91,7 @@ const loginCtrl = async (req, res) => {
         }
 
         user.set('password', undefined, { strict: false });
-        user.set('company', undefined, { strict: false });
-        user.set('nif', undefined, { strict: false });
-        user.set('needCompleteOnboarding', undefined, { strict: false });
-        user.set('onboardingStep', undefined, { strict: false });
+        user.set('emailCode', undefined, { strict: false });
 
         const data = {
             token: tokenSign(user),

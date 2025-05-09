@@ -33,5 +33,5 @@ print("Mensaje original:", mensaje)
 cifrado = encode_message(mensaje)
 print("Mensaje cifrado:", cifrado)
 
-descifrado = decode_message(cifrado)
+descifrado = decode_message([0, 11, 1, 20, 7, 9, 2, 30, 0])
 print("Mensaje descifrado:", descifrado)

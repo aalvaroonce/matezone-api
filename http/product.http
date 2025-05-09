@@ -1,0 +1,87 @@
+### Variables
+
+@baseUrl = http://localhost:8000/api/product
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODFjYzNmZmMxZDE2NTdlODYxODlhMTYiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjcxNTczNiwiZXhwIjoxNzQ5MzA3NzM2fQ.BmN9GG_BphMwlgv4IgPujp2E0aKZLsVIu3YxT3musno
+@productId = 681e2fabd99271228561facc
+@reviewId = 681e2ca9cb07badf5c3d74a2
+
+### Crear producto 681e283f82a522aec61af02d
+
+POST {{baseUrl}} HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Yerba ultra mega guay",
+    "description": "Una yerba que te coloca solo con olerla",
+    "price": 99.99,
+    "discount": 10,
+    "stock": 59,
+    "category": "Yerbas",
+    "attributes": [
+    { "nombre": "Sabor", "valor": "Mango" }
+]
+}
+
+### Listar productos (sin filtros)
+
+GET {{baseUrl}} HTTP/1.1
+
+### Listar productos con filtros
+
+GET {{baseUrl}}?minPrice=10\&maxPrice=1000\&minRating=4\&sortBy=priceDesc\&category=Yerbas HTTP/1.1
+
+### Obtener producto por ID
+
+GET {{baseUrl}}/{{productId}} HTTP/1.1
+
+### Actualizar producto
+
+PUT {{baseUrl}}/{{productId}} HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "price": 549.99,
+    "stock": 10
+}
+
+### Eliminar producto (borrado lógico)
+
+DELETE {{baseUrl}}/{{productId}} HTTP/1.1
+Authorization: Bearer {{token}}
+
+### Añadir imagen a producto
+
+### Añadir imagen a producto (el controlador usará req.user._id)
+PATCH {{baseUrl}}/{{productId}}/addimage HTTP/1.1
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="alt"
+
+Cerberus
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="image"; filename="cerberus.png"
+Content-Type: image/png
+
+< ./images/cerberus.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+
+### Añadir reseña a producto
+
+POST {{baseUrl}}/{{productId}}/review HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "rating": 5,
+    "comment": "Excelente yerba, muy buena calidad"
+}
+
+### Eliminar reseña de producto
+
+DELETE {{baseUrl}}/{{productId}}/review/{{reviewId}} HTTP/1.1
+Authorization: Bearer {{token}}

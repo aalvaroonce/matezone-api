@@ -1,3 +1,5 @@
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODFjYzNmZmMxZDE2NTdlODYxODlhMTYiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjcxNTczNiwiZXhwIjoxNzQ5MzA3NzM2fQ.BmN9GG_BphMwlgv4IgPujp2E0aKZLsVIu3YxT3musno
+
 ### Registro de usuario
 POST http://localhost:8000/api/user/register
 Content-Type: application/json
@@ -10,10 +12,9 @@ Content-Type: application/json
   "phoneNumber": "123456789"
 }
 
-
 ### Validación de email (requiere token de auth)
 PUT http://localhost:8000/api/user/validation-mail
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODFjYzNmZmMxZDE2NTdlODYxODlhMTYiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjcxNTczNiwiZXhwIjoxNzQ5MzA3NzM2fQ.BmN9GG_BphMwlgv4IgPujp2E0aKZLsVIu3YxT3musno
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
@@ -39,5 +40,5 @@ Content-Type: application/json
 
 {
   "email": "alvarodiezz16@gmail.com",
-  "password": "securePass123."
+  "password": "NuevoPassword456."
 }

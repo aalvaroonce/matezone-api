@@ -41,7 +41,14 @@ const validatorRegister = [
 
 const validatorLogin = [
     check('email').exists().notEmpty().isEmail(),
-    check('password').exists().notEmpty().isLength({ min: 8, max: 16 }),
+    check('password')
+        .exists()
+        .notEmpty()
+        .isLength({ min: 8, max: 64 })
+        .matches(/[A-Z]/)
+        .matches(/[a-z]/)
+        .matches(/[0-9]/)
+        .matches(/[!@#$%^&*(),.?":{}|<>]/),
     (req, res, next) => {
         return validateResults(req, res, next);
     }

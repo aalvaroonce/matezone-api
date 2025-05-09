@@ -26,6 +26,10 @@ const ProductSchema = new mongoose.Schema(
             type: String,
             required: true
         },
+        sold: {
+            type: Number,
+            default: 0
+        },
         attributes: [
             {
                 nombre: String,
@@ -38,14 +42,27 @@ const ProductSchema = new mongoose.Schema(
                 alt: String
             }
         ],
-        reviews: [
-            {
-                user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
-                rating: { type: Number, min: 1, max: 5 },
-                comment: String,
-                createdAt: { type: Date, default: Date.now }
-            }
-        ]
+        totalReview: {
+            type: Number
+        },
+        reviews: {
+            scoring: {
+                type: Number,
+                default: 0
+            },
+            totalRatings: {
+                type: Number,
+                default: 0
+            },
+            reviewTexts: [
+                {
+                    user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+                    rating: { type: Number, min: 1, max: 5 },
+                    comment: String,
+                    createdAt: { type: Date, default: Date.now }
+                }
+            ]
+        }
     },
     {
         timestamps: true
