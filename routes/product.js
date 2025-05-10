@@ -215,7 +215,7 @@ router.delete('/:id', authMiddleware, checkRol(['admin']), validatorDeleteProduc
 
 /**
  * @openapi
- * /api/product/{id}/addimage:
+ * /api/product/{productId}/addimage:
  *   patch:
  *     tags:
  *       - Product
@@ -251,10 +251,10 @@ router.delete('/:id', authMiddleware, checkRol(['admin']), validatorDeleteProduc
  *         description: Error interno del servidor
  */
 router.patch(
-    '/:id/addimage',
+    '/:productId/addimage',
     authMiddleware,
-    validatorAddImage,
     uploadMiddlewareMemory.single('image'),
+    validatorAddImage,
     addImage
 );
 

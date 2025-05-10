@@ -54,11 +54,12 @@ Authorization: Bearer {{admin_token}}
 ### ADD IMAGE TO USER (requires token)
 PATCH http://localhost:8000/api/user/addimage
 Authorization: Bearer {{token}}
-Content-Type: multipart/form-data
+Content-Type: multipart/form-data; boundary=Boundry
 
---boundary
-Content-Disposition: form-data; name="image"; filename="foto.jpg"
+--Boundry
+Content-Disposition: form-data; name="image"; filename="cerberus.png"
 Content-Type: image/jpeg
 
-< ./foto.jpg
---boundary--
+< ./images/cerberus.png
+--Boundry--
+

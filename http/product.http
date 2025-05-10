@@ -51,23 +51,18 @@ Authorization: Bearer {{token}}
 DELETE {{baseUrl}}/{{productId}} HTTP/1.1
 Authorization: Bearer {{token}}
 
-### Añadir imagen a producto
 
-### Añadir imagen a producto (el controlador usará req.user._id)
+### Añadir imagen a producto 
 PATCH {{baseUrl}}/{{productId}}/addimage HTTP/1.1
 Authorization: Bearer {{token}}
-Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Type: multipart/form-data; boundary=Boundry
 
-------WebKitFormBoundary7MA4YWxkTrZu0gW
-Content-Disposition: form-data; name="alt"
-
-Cerberus
-------WebKitFormBoundary7MA4YWxkTrZu0gW
+--Boundry
 Content-Disposition: form-data; name="image"; filename="cerberus.png"
-Content-Type: image/png
+Content-Type: image/jpeg
 
 < ./images/cerberus.png
-------WebKitFormBoundary7MA4YWxkTrZu0gW--
+--Boundry--
 
 
 ### Añadir reseña a producto

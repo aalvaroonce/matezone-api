@@ -82,16 +82,11 @@ const validatorDeleteProduct = [
 ];
 
 const validatorAddImage = [
-    check('id')
+    check('productId')
         .exists()
         .withMessage('El id es obligatorio')
         .isMongoId()
         .withMessage('El id debe ser un MongoID válido'),
-    check('alt')
-        .exists()
-        .withMessage('El texto alternativo es obligatorio')
-        .isString()
-        .withMessage('El texto alternativo debe ser un texto'),
     (req, res, next) => validateResults(req, res, next)
 ];
 

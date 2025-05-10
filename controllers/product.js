@@ -110,20 +110,19 @@ const deleteProduct = async (req, res) => {
 const addImage = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { alt } = matchedData(req);
+        const { productId } = matchedData(req);
         const fileBuffer = req.file.buffer;
         const fileName = req.file.originalname;
         const pinataResponse = await uploadToPinata(fileBuffer, fileName, userId);
         const ipfsFile = pinataResponse.IpfsHash;
         const ipfs = `https://${process.env.PINATA_GATEWAY_URL}/ipfs/${ipfsFile}`;
-        const data = await productModel.findByIdAndUpdate(
-            userId,
+        const data = await productModel.updateOne(
+            { _id: productId },
             {
                 $push: {
-                    images: { url: ipfs, alt: alt }
+                    images: ipfs
                 }
-            },
-            { new: true }
+            }
         );
 
         res.status(200).send(data);
