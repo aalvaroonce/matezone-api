@@ -32,7 +32,6 @@ const OrderSchema = new mongoose.Schema(
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'product'
                 },
-                name: String,
                 quantity: Number,
                 unit_price: Number
             }

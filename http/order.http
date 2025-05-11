@@ -1,0 +1,50 @@
+
+@baseUrl = http://localhost:8000/api/order
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODFjYzNmZmMxZDE2NTdlODYxODlhMTYiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjcxNTczNiwiZXhwIjoxNzQ5MzA3NzM2fQ.BmN9GG_BphMwlgv4IgPujp2E0aKZLsVIu3YxT3musno
+@productId = 681e2fabd99271228561facc
+
+### Crear una orden
+POST {{baseUrl}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "items": [
+    {
+      "product": "64fc78a1b60e4100234b9f21",
+      "quantity": 2,
+      "unit_price": 19.99
+    }
+  ],
+  "total": 39.98,
+  "deliveryMethod": "express",
+  "shippingAddress": {
+    "street": "Calle Falsa",
+    "number": "123",
+    "postal": "28080",
+    "city": "Madrid",
+    "province": "Madrid"
+  }
+}
+
+### Obtener todas las órdenes del usuario autenticado
+GET http://localhost:3000/api/order
+Authorization: Bearer {{token}}
+
+### Obtener una orden por ID
+GET http://localhost:3000/api/order/64fc78a1b60e4100234b9f21
+Authorization: Bearer {{token}}
+
+### Actualizar el estado de una orden (admin)
+PUT http://localhost:3000/api/order/status
+Authorization: Bearer {{admin_token}}
+Content-Type: application/json
+
+{
+  "id": "64fc78a1b60e4100234b9f21",
+  "state": "sent"
+}
+
+### Eliminar una orden (lógica)
+DELETE http://localhost:3000/api/order/64fc78a1b60e4100234b9f21
+Authorization: Bearer {{token}}

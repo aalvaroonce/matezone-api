@@ -1,4 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const orderUpdateStatus = require('../schemas/orderUpdateStatus');
 
 const options = {
     definition: {
@@ -42,7 +43,9 @@ const options = {
                 userData: require('../schemas/userData'),
                 userUpdate: require('../schemas/userUpdate'),
                 mailCode: require('../schemas/mailCode'),
-                mailRecover: require('../schemas/mailRecover')
+                mailRecover: require('../schemas/mailRecover'),
+                createOrder: require('../schemas/createOrder'),
+                orderUpdateStatus: require('../schemas/orderUpdateStatus')
             }
         }
     },
