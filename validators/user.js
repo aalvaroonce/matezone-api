@@ -131,7 +131,6 @@ const validatorUpdate = [
 const validatorUpdateUserRole = [
     check('userId').exists().notEmpty().isMongoId(),
     check('newRole').exists().notEmpty().isIn(['user', 'seller', 'admin']),
-
     (req, res, next) => validateResults(req, res, next)
 ];
 

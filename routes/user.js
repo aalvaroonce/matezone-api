@@ -296,33 +296,6 @@ router.put('/changepswd', authMiddleware, validatorChangePassword, changePasswor
  */
 router.delete('/', authMiddleware, deleteUser);
 
-// Retornar un usuario
-/**
- * @openapi
- * /api/user/restore/{id}:
- *   patch:
- *     tags:
- *       - User
- *     summary: Restaurar un usuario eliminado lógicamente
- *     parameters:
- *       - name: id
- *         in: path
- *         description: ID del usuario a restaurar
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       '200':
- *         description: Usuario restaurado
- *       '404':
- *         description: No se encontró el usuario o no está eliminado
- *       '500':
- *         description: Error en el servidor
- *     security:
- *       - bearerAuth: []
- */
-router.patch('/restore/:id', authMiddleware, checkRol(['admin']), validatorGetUser, restoreUser);
-
 /**
  * @openapi
  * /api/user/addimage:
@@ -398,9 +371,36 @@ router.patch('/addimage', authMiddleware, uploadMiddlewareMemory.single('image')
 router.patch(
     '/updaterole',
     authMiddleware,
-    checkRol['admin'],
+    checkRol(['admin']),
     validatorUpdateUserRole,
     updateUserRole
 );
+
+// Retornar un usuario
+/**
+ * @openapi
+ * /api/user/restore/{id}:
+ *   patch:
+ *     tags:
+ *       - User
+ *     summary: Restaurar un usuario eliminado lógicamente
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID del usuario a restaurar
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Usuario restaurado
+ *       '404':
+ *         description: No se encontró el usuario o no está eliminado
+ *       '500':
+ *         description: Error en el servidor
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch('/restore/:id', authMiddleware, checkRol(['admin']), validatorGetUser, restoreUser);
 
 module.exports = router;
