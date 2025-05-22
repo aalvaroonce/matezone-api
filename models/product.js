@@ -37,9 +37,6 @@ const ProductSchema = new mongoose.Schema(
             }
         ],
         images: [String],
-        totalReview: {
-            type: Number
-        },
         reviews: {
             scoring: {
                 type: Number,

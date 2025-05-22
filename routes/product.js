@@ -73,7 +73,13 @@ const {
  *       '500':
  *         description: Error interno del servidor
  */
-router.post('/', authMiddleware, checkRol(['admin']), validatorCreateProduct, createProduct);
+router.post(
+    '/',
+    authMiddleware,
+    checkRol(['admin', 'seller']),
+    validatorCreateProduct,
+    createProduct
+);
 
 /**
  * @openapi
@@ -185,7 +191,13 @@ router.get('/:id', validatorGetProductById, getProductById);
  *       '500':
  *         description: Error interno del servidor
  */
-router.put('/:id', authMiddleware, checkRol(['admin']), validatorUpdateProduct, updateProduct);
+router.put(
+    '/:id',
+    authMiddleware,
+    checkRol(['admin', 'seller']),
+    validatorUpdateProduct,
+    updateProduct
+);
 
 /**
  * @openapi
@@ -211,7 +223,13 @@ router.put('/:id', authMiddleware, checkRol(['admin']), validatorUpdateProduct, 
  *       '500':
  *         description: Error interno del servidor
  */
-router.delete('/:id', authMiddleware, checkRol(['admin']), validatorDeleteProduct, deleteProduct);
+router.delete(
+    '/:id',
+    authMiddleware,
+    checkRol(['admin', 'seller']),
+    validatorDeleteProduct,
+    deleteProduct
+);
 
 /**
  * @openapi
@@ -253,6 +271,7 @@ router.delete('/:id', authMiddleware, checkRol(['admin']), validatorDeleteProduc
 router.patch(
     '/:productId/addimage',
     authMiddleware,
+    checkRol(['admin', 'seller']),
     uploadMiddlewareMemory.single('image'),
     validatorAddImage,
     addImage

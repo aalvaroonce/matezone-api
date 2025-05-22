@@ -4,6 +4,11 @@ const { handleHttpError } = require('../utils/handleError');
 
 const authMiddleware = async (req, res, next) => {
     try {
+        if (!req.headers.authorization) {
+            res.status(401).send('AUTHORIZATION_TOKEN_NEEDED');
+            return;
+        }
+
         const token = req.headers.authorization?.split(' ').pop() || req.query.token;
 
         if (!token) return handleHttpError(res, 'NOT_TOKEN', 401);

@@ -10,7 +10,8 @@ const {
     validatorEmail,
     validatorChangePassword,
     validatorGetUser,
-    validatorUpdate
+    validatorUpdate,
+    validatorUpdateUserRole
 } = require('../validators/user');
 const {
     registerCtrl,
@@ -25,7 +26,8 @@ const {
     deleteUser,
     restoreUser,
     changePassword,
-    addImage
+    addImage,
+    updateUserRole
 } = require('../controllers/user');
 const router = express.Router();
 
@@ -353,5 +355,52 @@ router.patch('/restore/:id', authMiddleware, checkRol(['admin']), validatorGetUs
  *          - bearerAuth: []
  */
 router.patch('/addimage', authMiddleware, uploadMiddlewareMemory.single('image'), addImage);
+
+/**
+ * @openapi
+ * /api/user/updaterole:
+ *   patch:
+ *     tags:
+ *       - User
+ *     summary: Cambiar el rol de un usuario
+ *     description: Solo los administradores pueden cambiar el rol de un usuario.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *               - newRole
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: "661a2b4f6f0c2f3c58d8a456"
+ *               newRole:
+ *                 type: string
+ *                 enum: [user, seller, admin]
+ *                 example: "seller"
+ *     responses:
+ *       '200':
+ *         description: Rol actualizado correctamente
+ *       '403':
+ *         description: No autorizado para cambiar roles
+ *       '404':
+ *         description: Usuario no encontrado
+ *       '422':
+ *         description: Error de validación en los campos
+ *       '500':
+ *         description: Error en el servidor
+ *     security:
+ *       - bearerAuth: []
+ */
+router.patch(
+    '/updaterole',
+    authMiddleware,
+    checkRol['admin'],
+    validatorUpdateUserRole,
+    updateUserRole
+);
 
 module.exports = router;

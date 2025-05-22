@@ -147,11 +147,35 @@ const restoreUser = async (req, res) => {
     }
 };
 
+const updateUserRole = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return handleHttpError(res, 'FORBIDDEN_ROLE_CHANGE', 403);
+        }
+
+        const { userId, newRole } = matchedData(req);
+
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return handleHttpError(res, 'USER_NOT_FOUND', 404);
+        }
+
+        user.role = newRole;
+        await user.save();
+
+        res.send('ROL_UPDATED');
+    } catch (err) {
+        console.log(err);
+        handleHttpError(res, 'ERROR_UPDATE_USER_ROLE');
+    }
+};
+
 module.exports = {
     getUser,
     updateUser,
     deleteUser,
     restoreUser,
     changePassword,
-    addImage
+    addImage,
+    updateUserRole
 };

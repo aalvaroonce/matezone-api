@@ -13,6 +13,7 @@ const disposableDomains = [
 const validatorRegister = [
     check('name').optional().isLength({ max: 100 }),
     check('surnames').optional().isLength({ max: 100 }),
+    check('rol').optional().isIn(['user', 'seller']),
     check('email')
         .exists()
         .notEmpty()
@@ -127,6 +128,13 @@ const validatorUpdate = [
     (req, res, next) => validateResults(req, res, next)
 ];
 
+const validatorUpdateUserRole = [
+    check('userId').exists().notEmpty().isMongoId(),
+    check('newRole').exists().notEmpty().isIn(['user', 'seller', 'admin']),
+
+    (req, res, next) => validateResults(req, res, next)
+];
+
 module.exports = {
     validatorRegister,
     validatorLogin,
@@ -135,5 +143,6 @@ module.exports = {
     validatorEmail,
     validatorChangePassword,
     validatorGetUser,
-    validatorUpdate
+    validatorUpdate,
+    validatorUpdateUserRole
 };

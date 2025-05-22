@@ -11,7 +11,7 @@ Content-Type: application/json
 {
   "items": [
     {
-      "product": "64fc78a1b60e4100234b9f21",
+      "product": "681e2fabd99271228561facc",
       "quantity": 2,
       "unit_price": 19.99
     }
@@ -28,23 +28,23 @@ Content-Type: application/json
 }
 
 ### Obtener todas las órdenes del usuario autenticado
-GET http://localhost:3000/api/order
+GET {{baseUrl}}
 Authorization: Bearer {{token}}
 
 ### Obtener una orden por ID
-GET http://localhost:3000/api/order/64fc78a1b60e4100234b9f21
+GET {{baseUrl}}/682091c8f273578c0634d410
 Authorization: Bearer {{token}}
 
 ### Actualizar el estado de una orden (admin)
-PUT http://localhost:3000/api/order/status
-Authorization: Bearer {{admin_token}}
+PATCH {{baseUrl}}/status
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "id": "64fc78a1b60e4100234b9f21",
+  "id": "682091c8f273578c0634d410",
   "state": "sent"
 }
 
 ### Eliminar una orden (lógica)
-DELETE http://localhost:3000/api/order/64fc78a1b60e4100234b9f21
+DELETE {{baseUrl}}/64fc78a1b60e4100234b9f21
 Authorization: Bearer {{token}}
