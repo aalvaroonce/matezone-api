@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { tokenSign } = require('../utils/handleToken');
+const { tokenSign, tokenSignToBuy } = require('../utils/handleToken');
 const { encrypt, compare } = require('../utils/handlePassword');
 const { generateVerificationCode, sendEmail } = require('../utils/handleMails');
 const { handleHttpError } = require('../utils/handleError');
@@ -18,7 +18,13 @@ const registerEmail = async (req, res) => {
         }
 
         const user = await userModel.create({ email: req.email });
-        res.send(user);
+
+        const data = {
+            token: tokenSignToBuy(user),
+            user: user
+        };
+
+        res.send(data);
     } catch {
         console.log(err);
         handleHttpError(res, 'ERROR_REGISTER_USER');
