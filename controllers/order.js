@@ -1,19 +1,51 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleError');
-const { orderModel } = require('../models');
+const { orderModel, productModel } = require('../models');
 
 // Crear orden
 const createOrder = async (req, res) => {
+    const session = await orderModel.startSession();
+    session.startTransaction();
+
     try {
         const clientId = req.user._id;
         const data = matchedData(req);
-        const order = await orderModel.create({
-            ...data,
-            client: clientId,
-            date: new Date()
-        });
-        res.status(201).send(order);
+
+        for (const item of data.items) {
+            const product = await productModel.findById(item.product).session(session);
+
+            if (!product) {
+                throw new Error(`Producto no encontrado: ${item.product}`);
+            }
+
+            if (product.stock < item.quantity) {
+                throw new Error(`Stock insuficiente para el producto: ${product.name}`);
+            }
+            if ((product.stock -= item.quantity) >= 0) {
+                product.stock -= item.quantity;
+            }
+            product.sold += item.quantity;
+            await product.save({ session });
+        }
+
+        const order = await orderModel.create(
+            [
+                {
+                    ...data,
+                    client: clientId,
+                    date: new Date()
+                }
+            ],
+            { session }
+        );
+
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(201).send(order[0]);
     } catch (err) {
+        await session.abortTransaction();
+        session.endSession();
         console.error(err);
         handleHttpError(res, 'ERROR_CREATE_ORDER');
     }

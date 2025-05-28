@@ -97,7 +97,7 @@ const addImage = async (req, res) => {
 // Eliminar usuario
 const deleteUser = async (req, res) => {
     try {
-        const id = req.user._id;
+        const { id } = matchedData(req);
         const { logic } = req.query;
         if (logic === 'true') {
             const deleteLogical = await userModel.delete({ _id: id });
@@ -170,6 +170,19 @@ const updateUserRole = async (req, res) => {
     }
 };
 
+const getLoginAttempts = async (req, res) => {
+    try {
+        if (req.user.role !== 'admin') {
+            return handleHttpError(res, 'FORBIDDEN_ROLE', 403);
+        }
+        const attempts = await loginAttemptModel.find().sort({ createdAt: -1 }).limit(100);
+        res.send(attempts);
+    } catch (err) {
+        console.log(err);
+        handleHttpError(res, 'ERROR_GETTING_LOGIN_ATTEMPTS');
+    }
+};
+
 module.exports = {
     getUser,
     updateUser,
@@ -177,5 +190,6 @@ module.exports = {
     restoreUser,
     changePassword,
     addImage,
-    updateUserRole
+    updateUserRole,
+    getLoginAttempts
 };

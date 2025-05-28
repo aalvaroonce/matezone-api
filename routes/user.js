@@ -18,7 +18,8 @@ const {
     loginCtrl,
     validateEmail,
     validateEmailRecover,
-    recoverPass
+    recoverPass,
+    registerEmail
 } = require('../controllers/auth');
 const {
     getUser,
@@ -27,7 +28,8 @@ const {
     restoreUser,
     changePassword,
     addImage,
-    updateUserRole
+    updateUserRole,
+    getLoginAttempts
 } = require('../controllers/user');
 const router = express.Router();
 
@@ -38,14 +40,7 @@ const router = express.Router();
  *   get:
  *     tags:
  *       - User
- *     summary: Obtener un usuario por id
- *     parameters:
- *       - name: id
- *         in: path
- *         description: ID del usuario
- *         required: true
- *         schema:
- *           type: string
+ *     summary: Obtener los datos del usuario
  *     responses:
  *       '200':
  *         description: Usuario obtenido
@@ -57,6 +52,35 @@ const router = express.Router();
  *       - bearerAuth: []
  */
 router.get('/profile', authMiddleware, getUser);
+
+/**
+ * @openapi
+ * /api/user/register-email:
+ *   post:
+ *     tags:
+ *       - User
+ *     summary: Registro por email
+ *     description: Registra un nuevo usuario solo con su email.
+ *     requestBody:
+ *          content:
+ *              application/json:
+ *                  schema:
+ *                      $ref: "#/components/schemas/mailUser"
+ *     responses:
+ *       '200':
+ *         description: Usuario creado exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: "#/components/schemas/userData"
+ *       '409':
+ *         description: El usuario ya existe.
+ *       '422':
+ *         description: Error de validación.
+ *       '500':
+ *         description: Error en el servidor.
+ */
+router.post('/register-email', validatorEmail, registerEmail);
 
 /**
  * @openapi
@@ -273,12 +297,18 @@ router.put('/changepswd', authMiddleware, validatorChangePassword, changePasswor
 // Eliminar un usuario
 /**
  * @openapi
- * /api/user:
+ * /api/user/:
  *   delete:
  *     tags:
  *       - User
  *     summary: Eliminar un usuario (borrado lógico o físico)
  *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID del usuario a restaurar
+ *         required: true
+ *         schema:
+ *           type: string
  *       - name: logic
  *         in: query
  *         description: "true para borrado lógico, false para físico (por defecto físico)"
@@ -294,7 +324,7 @@ router.put('/changepswd', authMiddleware, validatorChangePassword, changePasswor
  *     security:
  *       - bearerAuth: []
  */
-router.delete('/', authMiddleware, deleteUser);
+router.delete('/:id', authMiddleware, validatorGetUser, deleteUser);
 
 /**
  * @openapi
@@ -402,5 +432,71 @@ router.patch(
  *       - bearerAuth: []
  */
 router.patch('/restore/:id', authMiddleware, checkRol(['admin']), validatorGetUser, restoreUser);
+
+/**
+ * @openapi
+ * /api/user/login-attempts:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Obtener los intentos de login fallidos
+ *     description: Retorna una lista de intentos fallidos de login registrados en el sistema. Solo accesible para administradores.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Lista de intentos de login fallidos obtenida exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "66534ab27e56c1c8b888e334"
+ *                   email:
+ *                     type: string
+ *                     example: "ejemplo@correo.com"
+ *                   ip:
+ *                     type: string
+ *                     example: "192.168.1.10"
+ *                   userAgent:
+ *                     type: string
+ *                     example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
+ *                   reason:
+ *                     type: string
+ *                     example: "INVALID_PASSWORD"
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2025-05-26T18:13:45.123Z"
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2025-05-26T18:13:45.123Z"
+ *       '403':
+ *         description: Acceso denegado. Solo administradores pueden consultar esta ruta.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ACCESS_DENIED"
+ *       '500':
+ *         description: Error interno del servidor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR_GET_FAILED_LOGINS"
+ */
+router.get('/login-attempts', authMiddleware, checkRol(['admin']), getLoginAttempts);
 
 module.exports = router;

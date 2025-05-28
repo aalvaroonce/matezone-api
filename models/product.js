@@ -24,6 +24,7 @@ const ProductSchema = new mongoose.Schema(
         },
         category: {
             type: String,
+            enum: ['mates', 'bombillas', 'yerbas', 'termos'],
             required: true
         },
         sold: {

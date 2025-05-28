@@ -71,7 +71,18 @@ const validatorEmailRecover = [
 ];
 
 const validatorEmail = [
-    check('email').exists().notEmpty().isEmail(),
+    check('email')
+        .exists()
+        .notEmpty()
+        .isEmail()
+        .custom(value => {
+            // Bloquear correos temporales
+            const domain = value.split('@')[1];
+            if (disposableDomains.includes(domain)) {
+                throw new Error('No se permiten correos temporales');
+            }
+            return true;
+        }),
     (req, res, next) => {
         return validateResults(req, res, next);
     }
@@ -125,6 +136,7 @@ const validatorUpdate = [
     check('name').optional(),
     check('surnames').optional(),
     check('notifications').optional(),
+    check('adress').optional(),
     (req, res, next) => validateResults(req, res, next)
 ];
 

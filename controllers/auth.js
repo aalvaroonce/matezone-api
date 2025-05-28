@@ -7,6 +7,24 @@ const { userModel } = require('../models');
 const path = require('path');
 const fs = require('fs');
 
+const registerEmail = async (req, res) => {
+    try {
+        req = matchedData(req);
+        const existingUser = await userModel.findOne(filter);
+
+        if (existingUser) {
+            handleHttpError(res, 'USER_EXISTS', 409);
+            return;
+        }
+
+        const user = await userModel.create({ email: req.email });
+        res.send(user);
+    } catch {
+        console.log(err);
+        handleHttpError(res, 'ERROR_REGISTER_USER');
+    }
+};
+
 const registerCtrl = async (req, res) => {
     try {
         req = matchedData(req);
@@ -70,15 +88,47 @@ const loginCtrl = async (req, res) => {
 
         const user = await userModel
             .findOne({ email: req.email })
-            .select('password name role email');
+            .select('password name role email attempt status');
 
         if (!user) {
+            await loginAttemptModel.create({
+                email: req.email,
+                ip: req.ip,
+                userAgent: req.headers['user-agent'],
+                reason: 'USER_NOT_EXIST'
+            });
             handleHttpError(res, 'USER_NOT_EXIST', 404);
             return;
         }
 
         if (user.status === 0) {
+            await loginAttemptModel.create({
+                email: req.email,
+                ip: req.ip,
+                userAgent: req.headers['user-agent'],
+                reason: 'USER_NOT_VALIDATED'
+            });
             handleHttpError(res, 'USER_NOT_VALIDATED', 401);
+            return;
+        }
+
+        if (user.attempt >= 10) {
+            handleHttpError(res, 'ACCOUNT_LOCKED_TOO_MANY_ATTEMPTS', 403);
+
+            // Enviar correo notificando intentos excesivos
+            const templatePath = path.join(
+                __dirname,
+                '../templates/loginAttemptsExceededMail.html'
+            );
+            let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
+
+            sendEmail({
+                subject: 'Demasiados intentos de acceso en Matezone',
+                html: htmlTemplate,
+                from: process.env.EMAIL,
+                to: req.email
+            });
+
             return;
         }
 
@@ -86,8 +136,38 @@ const loginCtrl = async (req, res) => {
         const check = await compare(req.password, hashPassword);
 
         if (!check) {
+            const updatedAttempt = user.attempt + 1;
+            await userModel.updateOne({ email: req.email }, { $set: { attempt: updatedAttempt } });
+
+            await loginAttemptModel.create({
+                email: req.email,
+                ip: req.ip,
+                userAgent: req.headers['user-agent'],
+                reason: 'INVALID_PASSWORD'
+            });
+
+            if (updatedAttempt === 10) {
+                // Enviar correo al usuario por 10 intentos fallidos
+                const templatePath = path.join(
+                    __dirname,
+                    '../templates/loginAttemptsExceededMail.html'
+                );
+                let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
+
+                sendEmail({
+                    subject: 'Demasiados intentos de acceso en Matezone',
+                    html: htmlTemplate,
+                    from: process.env.EMAIL,
+                    to: user.email
+                });
+            }
+
             handleHttpError(res, 'INVALID_PASSWORD', 401);
             return;
+        }
+
+        if (user.attempt > 0) {
+            await userModel.updateOne({ email: req.email }, { $set: { attempt: 0 } });
         }
 
         user.set('password', undefined, { strict: false });
@@ -97,6 +177,7 @@ const loginCtrl = async (req, res) => {
             token: tokenSign(user),
             user
         };
+
         res.send(data);
     } catch (err) {
         console.log(err);
@@ -111,7 +192,10 @@ const validateEmail = async (req, res) => {
         const data = await userModel.findById(userId);
 
         if (data.emailCode === code && data.attempt < 10) {
-            const doc = await userModel.updateOne({ _id: userId }, { status: 1 });
+            const doc = await userModel.updateOne(
+                { _id: userId },
+                { $set: { attempt: 0, status: 1 } }
+            );
             res.send(doc);
         } else {
             const counter = data.attempt + 1;
@@ -190,4 +274,11 @@ const recoverPass = async (req, res) => {
     }
 };
 
-module.exports = { registerCtrl, loginCtrl, validateEmail, validateEmailRecover, recoverPass };
+module.exports = {
+    registerCtrl,
+    loginCtrl,
+    validateEmail,
+    validateEmailRecover,
+    recoverPass,
+    registerEmail
+};

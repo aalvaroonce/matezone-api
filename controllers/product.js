@@ -4,9 +4,44 @@ const { productModel } = require('../models');
 const { uploadToPinata } = require('../utils/handleUploadIPFS');
 
 // Crear producto
+const VALID_PRICE_RANGES = {
+    mates: { min: 20, max: 60 },
+    bombillas: { min: 8, max: 20 },
+    yerbas: { min: 5, max: 11 },
+    termos: { min: 20, max: 60 }
+};
+
+const calculateFinalPrice = (price, discount) => {
+    const desc = discount || 0;
+    return price * (1 - desc / 100);
+};
+
 const createProduct = async (req, res) => {
     try {
         const body = matchedData(req);
+        const { price, discount, category, name } = body;
+
+        const finalPrice = calculateFinalPrice(price, discount);
+        const limits = VALID_PRICE_RANGES[category];
+
+        if (!limits) {
+            await sendAlertMail({
+                subject: 'Intento de creación con categoría inválida',
+                text: `Categoría no reconocida: ${category} para el producto "${name}".`
+            });
+            return handleHttpError(res, 'INVALID_CATEGORY', 400);
+        }
+
+        const isValidPrice = finalPrice >= limits.min && finalPrice <= limits.max;
+
+        if (!isValidPrice) {
+            await sendAlertMail({
+                subject: 'Alerta de precio fuera de rango',
+                text: `Intento de creación sospechoso:\nProducto: ${name}\nCategoría: ${category}\nPrecio original: ${price}\nDescuento: ${discount}%\nPrecio final: ${finalPrice.toFixed(2)}\nRango permitido: ${limits.min} - ${limits.max}`
+            });
+            return handleHttpError(res, 'INVALID_PRODUCT_PRICE', 400);
+        }
+
         const product = await productModel.create(body);
         res.status(201).send(product);
     } catch (err) {
@@ -18,7 +53,7 @@ const createProduct = async (req, res) => {
 // Obtener productos con filtros
 const getProducts = async (req, res) => {
     try {
-        const { minPrice, maxPrice, minRating, sortBy, category } = req.query;
+        const { minPrice, maxPrice, minRating, sortBy, category, name } = req.query;
 
         const filter = {};
 
@@ -33,6 +68,10 @@ const getProducts = async (req, res) => {
 
         if (category) {
             filter.category = category;
+        }
+
+        if (name) {
+            filter.name = name;
         }
 
         // Filtrado por rating (sólo existencia de reseñas)
@@ -85,6 +124,8 @@ const getProductById = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const { id } = matchedData(req);
+        const product = await productModel.findById(id);
+        if (!product) return handleHttpError(res, 'PRODUCT_NOT_FOUND', 404);
         const data = matchedData(req, { locations: ['body'] });
         const updated = await productModel.findByIdAndUpdate(id, data, { new: true });
         res.send(updated);

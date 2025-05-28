@@ -39,12 +39,16 @@ const UserScheme = new mongoose.Schema(
         },
         address: [
             {
-                nombre: String,
+                name: String,
                 street: String,
                 number: String,
                 postal: String,
                 city: String,
-                province: String
+                province: String,
+                isDefault: {
+                    type: Boolean,
+                    default: false
+                }
             }
         ],
         urlToAvatar: {

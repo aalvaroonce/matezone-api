@@ -44,6 +44,7 @@ const options = {
                 userUpdate: require('../schemas/userUpdate'),
                 mailCode: require('../schemas/mailCode'),
                 mailRecover: require('../schemas/mailRecover'),
+                mailUser: require('../schemas/mailUser'),
                 createOrder: require('../schemas/createOrder'),
                 orderUpdateStatus: require('../schemas/orderUpdateStatus')
             }

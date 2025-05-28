@@ -29,7 +29,9 @@ const validatorCreateProduct = [
         .notEmpty()
         .withMessage('La categoría no puede estar vacía')
         .isString()
-        .withMessage('La categoría debe ser un texto'),
+        .withMessage('La categoría debe ser un texto')
+        .isIn(['mates', 'bombillas', 'yerbas', 'termos'])
+        .withMessage('La categoría debe ser: mates, bombillas, yerbas, termos'),
     check('attributes').optional().isArray().withMessage('Attributes debe ser un array'),
     check('attributes.*.nombre')
         .optional()
