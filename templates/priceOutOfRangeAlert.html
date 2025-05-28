@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Alerta de precio fuera de rango</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #F4F7FB;
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .email-container {
+            padding: 30px 0;
+        }
+
+        .email-content {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #ff4c4c;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .body {
+            padding: 20px 30px;
+            font-size: 16px;
+            color: #444;
+        }
+
+        .body p {
+            margin: 10px 0;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #ff4c4c;
+        }
+
+        .footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 13px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-content">
+            <div class="header">
+                <h1>Intento de creación sospechoso</h1>
+            </div>
+            <div class="body">
+                <p>Se ha intentado crear un producto con un <span class="highlight">precio fuera del rango permitido</span>.</p>
+                <p><strong>Producto:</strong> {{name}}</p>
+                <p><strong>Categoría:</strong> {{category}}</p>
+                <p><strong>Precio original:</strong> ${{price}}</p>
+                <p><strong>Descuento aplicado:</strong> {{discount}}%</p>
+                <p><strong>Precio final:</strong> ${{finalPrice}}</p>
+                <p><strong>Rango permitido:</strong> ${{min}} - ${{max}}</p>
+                <hr>
+                <p><strong>Vendedor:</strong> {{seller}}</p>
+            </div>
+            <div class="footer">
+                <p>Matezone App - 2025</p>
+                <p>Este correo fue generado automáticamente. Si tienes dudas, contáctanos.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

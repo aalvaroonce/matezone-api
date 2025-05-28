@@ -1,14 +1,17 @@
 const { matchedData } = require('express-validator');
 const { handleHttpError } = require('../utils/handleError');
-const { productModel } = require('../models');
+const { productModel, userModel } = require('../models');
 const { uploadToPinata } = require('../utils/handleUploadIPFS');
+const { sendEmail } = require('../utils/handleMails');
+const path = require('path');
+const fs = require('fs');
 
 // Crear producto
 const VALID_PRICE_RANGES = {
     mates: { min: 20, max: 60 },
-    bombillas: { min: 8, max: 20 },
-    yerbas: { min: 5, max: 11 },
-    termos: { min: 20, max: 60 }
+    bombillas: { min: 8, max: 30 },
+    yerbas: { min: 5, max: 40 },
+    termos: { min: 20, max: 80 }
 };
 
 const calculateFinalPrice = (price, discount) => {
@@ -18,6 +21,7 @@ const calculateFinalPrice = (price, discount) => {
 
 const createProduct = async (req, res) => {
     try {
+        const id = req.user._id;
         const body = matchedData(req);
         const { price, discount, category, name } = body;
 
@@ -25,19 +29,31 @@ const createProduct = async (req, res) => {
         const limits = VALID_PRICE_RANGES[category];
 
         if (!limits) {
-            await sendAlertMail({
-                subject: 'Intento de creación con categoría inválida',
-                text: `Categoría no reconocida: ${category} para el producto "${name}".`
-            });
             return handleHttpError(res, 'INVALID_CATEGORY', 400);
         }
 
         const isValidPrice = finalPrice >= limits.min && finalPrice <= limits.max;
 
         if (!isValidPrice) {
-            await sendAlertMail({
+            const user = await userModel.findById(id);
+            const templatePath = path.join(__dirname, '../templates/priceOutOfRangeAlert.html');
+            let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
+
+            htmlTemplate = htmlTemplate
+                .replace('{{name}}', name)
+                .replace('{{category}}', category)
+                .replace('{{price}}', price)
+                .replace('{{discount}}', discount)
+                .replace('{{finalPrice}}', finalPrice.toFixed(2))
+                .replace('{{min}}', limits.min)
+                .replace('{{max}}', limits.max)
+                .replace('{{seller}}', `${user.name} ${user.surnames}`);
+
+            await sendEmail({
                 subject: 'Alerta de precio fuera de rango',
-                text: `Intento de creación sospechoso:\nProducto: ${name}\nCategoría: ${category}\nPrecio original: ${price}\nDescuento: ${discount}%\nPrecio final: ${finalPrice.toFixed(2)}\nRango permitido: ${limits.min} - ${limits.max}`
+                html: htmlTemplate,
+                from: process.env.EMAIL,
+                to: process.env.EMAIL
             });
             return handleHttpError(res, 'INVALID_PRODUCT_PRICE', 400);
         }
@@ -86,7 +102,10 @@ const getProducts = async (req, res) => {
         else if (sortBy === 'priceDesc') sort = { price: -1 };
 
         // Búsqueda inicial
-        let products = await productModel.find(filter).sort(sort);
+        let products = await productModel
+            .find(filter)
+            .sort(sort)
+            .populate('reviews.reviewTexts.user', 'name');
 
         // Filtrado final por rating promedio
         if (minRating) {
@@ -94,7 +113,8 @@ const getProducts = async (req, res) => {
             if (!isNaN(minR)) {
                 products = products.filter(p => {
                     const avgRating =
-                        p.reviews.reduce((acc, r) => acc + r.rating, 0) / (p.reviews.length || 1);
+                        p.reviews.reviewTexts.reduce((acc, r) => acc + r.rating, 0) /
+                        (p.reviews.length || 1);
                     return avgRating >= minR;
                 });
             }
@@ -111,7 +131,9 @@ const getProducts = async (req, res) => {
 const getProductById = async (req, res) => {
     try {
         const { id } = matchedData(req);
-        const product = await productModel.findById(id).populate('reviews.user', 'name');
+        const product = await productModel
+            .findById(id)
+            .populate('reviews.reviewTexts.user', 'name');
         if (!product) return handleHttpError(res, 'PRODUCT_NOT_FOUND', 404);
         res.send(product);
     } catch (err) {

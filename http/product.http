@@ -17,10 +17,10 @@ Authorization: Bearer {{token}}
     "price": 99.99,
     "discount": 10,
     "stock": 59,
-    "category": "Yerbas",
+    "category": "yerbas",
     "attributes": [
-    { "nombre": "Sabor", "valor": "Mango" }
-]
+        { "nombre": "Sabor", "valor": "Mango" }
+    ]
 }
 
 ### Listar productos (sin filtros)
