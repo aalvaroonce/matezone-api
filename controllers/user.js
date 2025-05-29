@@ -70,9 +70,8 @@ const changePassword = async (req, res) => {
         if (!user) {
             return res.status(404).send({ message: 'USER_NOT_EXISTS' });
         }
-        console.log(user);
+
         const hashPassword = user.password;
-        console.log(currentPassword, hashPassword);
         const isPasswordValid = await compare(currentPassword, hashPassword);
 
         if (!isPasswordValid) {

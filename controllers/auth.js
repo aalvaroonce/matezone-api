@@ -76,7 +76,7 @@ const registerCtrl = async (req, res) => {
         dataUser.set('emailCode', undefined, { strict: false });
 
         if (req.user?.rol === 'admin') {
-            dataUser = await userModel.updateOne(filter, { status: 1 });
+            dataUser = await userModel.updateOne(filter, { $set: { status: 1 } });
         } else {
             const templatePath = path.join(__dirname, '../templates/verificationCodeMail.html');
             let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
@@ -121,6 +121,24 @@ const loginCtrl = async (req, res) => {
             });
             handleHttpError(res, 'USER_NOT_EXIST', 404);
             return;
+        }
+
+        if (user.lastTry) {
+            const THIRTY_MINUTES = 30 * 60 * 1000;
+            const timeSinceLastTry = Date.now() - new Date(user.lastTry).getTime();
+
+            if (timeSinceLastTry < THIRTY_MINUTES) {
+                await loginAttemptModel.create({
+                    email: req.email,
+                    ip: req.ip,
+                    userAgent: req.headers['user-agent'],
+                    reason: 'TOO_MANY_ATTEMPTS_WAIT_30_MIN'
+                });
+                handleHttpError(res, 'TOO_MANY_ATTEMPTS_WAIT_30_MIN', 429); // 429: Too Many Requests
+                return;
+            }
+
+            await userModel.updateOne({ email: req.email }, { $set: { attempt: 5 } });
         }
 
         if (user.status === 0) {
@@ -182,6 +200,8 @@ const loginCtrl = async (req, res) => {
                     from: process.env.EMAIL,
                     to: user.email
                 });
+
+                await userModel.updateOne({ email: req.email }, { $set: { lastTry: Date.now() } });
             }
 
             handleHttpError(res, 'INVALID_PASSWORD', 401);
