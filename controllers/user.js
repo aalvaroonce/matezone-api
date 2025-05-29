@@ -7,7 +7,29 @@ const { handleHttpError } = require('../utils/handleError');
 const getUser = async (req, res) => {
     try {
         const userId = req.user._id;
-        const data = await userModel.findById(userId).select('-attempt -status -role -emailCode');
+        const data = await userModel.findById(userId).select('-attempt -status -emailCode');
+        if (!data) {
+            handleHttpError(res, 'USER_NOT_FOUND', 404);
+            return;
+        }
+
+        res.send(data);
+    } catch (err) {
+        handleHttpError(res, 'ERROR_GETTING_USER');
+    }
+};
+
+const getUsers = async (req, res) => {
+    try {
+        const { name } = req.query;
+        const filter = {};
+
+        if (name) {
+            filter.name = name;
+        }
+
+        const data = await userModel.find(filter).select('-attempt -status -emailCode');
+
         if (!data) {
             handleHttpError(res, 'USER_NOT_FOUND', 404);
             return;
@@ -185,6 +207,7 @@ const getLoginAttempts = async (req, res) => {
 
 module.exports = {
     getUser,
+    getUsers,
     updateUser,
     deleteUser,
     restoreUser,

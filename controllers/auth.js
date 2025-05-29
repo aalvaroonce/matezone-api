@@ -75,6 +75,22 @@ const registerCtrl = async (req, res) => {
         dataUser.set('password', undefined, { strict: false });
         dataUser.set('emailCode', undefined, { strict: false });
 
+        if (req.user?.rol === 'admin') {
+            dataUser = await userModel.updateOne(filter, { status: 1 });
+        } else {
+            const templatePath = path.join(__dirname, '../templates/verificationCodeMail.html');
+            let htmlTemplate = fs.readFileSync(templatePath, 'utf8');
+
+            htmlTemplate = htmlTemplate.replace('verifyCode', emailCode);
+
+            sendEmail({
+                subject: 'Tu código de verificación de Matezone',
+                html: htmlTemplate,
+                from: process.env.EMAIL,
+                to: req.email
+            });
+        }
+
         const data = {
             token: tokenSign(dataUser),
             user: dataUser
