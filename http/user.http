@@ -1,0 +1,65 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODFjYzNmZmMxZDE2NTdlODYxODlhMTYiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjcxNTczNiwiZXhwIjoxNzQ5MzA3NzM2fQ.BmN9GG_BphMwlgv4IgPujp2E0aKZLsVIu3YxT3musno
+@admin_token =  
+
+
+
+### RECOVER TOKEN TO VALIDATE PASSWORD
+PUT http://localhost:8000/api/user/recover-psswd
+Content-Type: application/json
+
+{
+  "email": "test@example.com"
+}
+
+### VALIDATE EMAIL TO RECOVER PASSWORD
+PUT http://localhost:8000/api/user/validation-psswd
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "code": "123456"
+}
+
+### GET USER PROFILE (requires token)
+GET http://localhost:8000/api/user/profile
+Authorization: Bearer {{token}}
+
+### UPDATE USER (requires token)
+PUT http://localhost:8000/api/user/profile
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "Nuevo Nombre"
+}
+
+### CHANGE PASSWORD (requires token)
+PUT http://localhost:8000/api/user/changepswd
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "currentPassword": "securePass123.",
+  "newPassword": "NuevoPassword456."
+}
+
+### DELETE USER (requires token)
+DELETE http://localhost:8000/api/user?logic=true
+Authorization: Bearer {{token}}
+
+### RESTORE USER (requires admin token)
+PATCH http://localhost:8000/api/user/restore/USER_ID
+Authorization: Bearer {{admin_token}}
+
+### ADD IMAGE TO USER (requires token)
+PATCH http://localhost:8000/api/user/addimage
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=Boundry
+
+--Boundry
+Content-Disposition: form-data; name="image"; filename="cerberus.png"
+Content-Type: image/jpeg
+
+< ./images/cerberus.png
+--Boundry--
+

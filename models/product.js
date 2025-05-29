@@ -14,13 +14,22 @@ const ProductSchema = new mongoose.Schema(
             type: Number,
             required: true
         },
+        discount: {
+            type: Number, // porcentaje: 0-100
+            default: 0
+        },
         stock: {
             type: Number,
             default: 0
         },
         category: {
             type: String,
+            enum: ['mates', 'bombillas', 'yerbas', 'termos'],
             required: true
+        },
+        sold: {
+            type: Number,
+            default: 0
         },
         attributes: [
             {
@@ -28,17 +37,30 @@ const ProductSchema = new mongoose.Schema(
                 valor: String
             }
         ],
-        images: [
-            {
-                url: String,
-                alt: String
-            }
-        ]
+        images: [String],
+        reviews: {
+            scoring: {
+                type: Number,
+                default: 0
+            },
+            totalRatings: {
+                type: Number,
+                default: 0
+            },
+            reviewTexts: [
+                {
+                    user: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+                    rating: { type: Number, min: 1, max: 5 },
+                    comment: String,
+                    createdAt: { type: Date, default: Date.now }
+                }
+            ]
+        }
     },
     {
         timestamps: true
     }
 );
 
-ProductoSchema.plugin(mongooseDelete, { overrideMethods: 'all' });
+ProductSchema.plugin(mongooseDelete, { overrideMethods: 'all' });
 module.exports = mongoose.model('product', ProductSchema);

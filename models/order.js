@@ -18,8 +18,13 @@ const OrderSchema = new mongoose.Schema(
         },
         state: {
             type: String,
-            enum: ['pending', 'in-process', 'sent', 'recived', 'cancelled'],
+            enum: ['pending', 'in-process', 'sent', 'received', 'cancelled'],
             default: 'pending'
+        },
+        deliveryMethod: {
+            type: String,
+            enum: ['standard', 'express', 'urgent'],
+            default: 'standard'
         },
         items: [
             {
@@ -27,7 +32,6 @@ const OrderSchema = new mongoose.Schema(
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'product'
                 },
-                name: String,
                 quantity: Number,
                 unit_price: Number
             }

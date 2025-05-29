@@ -28,21 +28,34 @@ const UserScheme = new mongoose.Schema(
             type: String,
             select: false
         },
+        status: {
+            type: Number,
+            default: 0
+        },
+        lastTry: {
+            type: Date
+        },
         role: {
             type: String,
-            enum: ['user', 'admin'],
+            enum: ['user', 'admin', 'seller'],
             default: 'user'
         },
-        address: {
-            street: String,
-            number: String,
-            postal: String,
-            city: String,
-            province: String
-        },
-        notifications: {
-            type: Boolean,
-            default: false
+        address: [
+            {
+                name: String,
+                street: String,
+                number: String,
+                postal: String,
+                city: String,
+                province: String,
+                isDefault: {
+                    type: Boolean,
+                    default: false
+                }
+            }
+        ],
+        urlToAvatar: {
+            type: String
         }
     },
     {
