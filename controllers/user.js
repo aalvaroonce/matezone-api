@@ -134,9 +134,13 @@ const deleteUser = async (req, res) => {
             }
 
             if (userToDelete.urlToAvatar) {
-                const imageCid = userToDelete.urlToAvatar.split('/ipfs/') ? parts[1] : null;
-                deleteFromPinata(imageCid);
+                const parts = userToDelete.urlToAvatar.split('/ipfs/');
+                const imageCid = parts.length > 1 ? parts[1] : null;
+                if (imageCid) {
+                    deleteFromPinata(imageCid);
+                }
             }
+
             const deleted = await userModel.findOneAndDelete({ _id: id });
             if (!deleted) {
                 return res.status(404).send(`USER_NOT_FOUND_WITH_${id}`);

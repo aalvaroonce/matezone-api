@@ -157,15 +157,43 @@ const updateProduct = async (req, res) => {
     }
 };
 
-// Eliminar producto (lógica)
+// Eliminar producto
 const deleteProduct = async (req, res) => {
     try {
         const { id } = matchedData(req);
-        const deleted = await productModel.delete({ _id: id });
-        res.send(deleted);
+        const { logic } = req.query;
+        if (logic === 'true') {
+            const deleteLogical = await productModel.delete({ _id: id });
+            if (!deleteLogical) {
+                return res.status(404).send(`USER_${id}_NOT_FOUND`);
+            }
+            res.status(200).send(deleteLogical);
+        } else {
+            const productToDelete = await productModel.findOne({ _id: id });
+
+            if (!productToDelete) {
+                return res.status(404).send('USER_NOT_FOUND');
+            }
+
+            if (productToDelete.images.length !== 0) {
+                for (const image of productToDelete.images) {
+                    const parts = image.split('/ipfs/');
+                    const imageCid = parts.length > 1 ? parts[1] : null;
+                    if (imageCid) {
+                        deleteFromPinata(imageCid);
+                    }
+                }
+            }
+
+            const deleted = await userModel.findOneAndDelete({ _id: id });
+            if (!deleted) {
+                return res.status(404).send(`USER_NOT_FOUND_WITH_${id}`);
+            }
+            res.status(200).send(deleted);
+        }
     } catch (err) {
-        console.error(err);
-        handleHttpError(res, 'ERROR_DELETE_PRODUCT');
+        console.log(err);
+        handleHttpError(res, 'ERROR_DELETE_USER');
     }
 };
 
