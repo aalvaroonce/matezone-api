@@ -9,12 +9,6 @@ const validatorCreateOrder = [
 
     check('items.*.quantity').isInt({ min: 1 }).withMessage('Cantidad debe ser mayor que 0'),
 
-    check('items.*.unit_price')
-        .isFloat({ min: 0 })
-        .withMessage('Precio unitario debe ser un número válido'),
-
-    check('total').isFloat({ min: 0 }).withMessage('Total debe ser un número positivo'),
-
     check('deliveryMethod')
         .optional()
         .isIn(['standard', 'express', 'urgent'])

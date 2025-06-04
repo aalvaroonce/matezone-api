@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Factura - Matezone</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+        .header { text-align: center; }
+        .details, .items { width: 100%; margin-top: 20px; border-collapse: collapse; }
+        .items th, .items td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        .total { text-align: right; margin-top: 20px; font-weight: bold; }
+        .footer { margin-top: 30px; font-size: 0.9em; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Factura</h1>
+        <p>Gracias por tu compra en Matezone</p>
+    </div>
+
+    <table class="details">
+        <tr><td><strong>Nombre:</strong> {{clientName}}</td></tr>
+        <tr><td><strong>Fecha:</strong> {{date}}</td></tr>
+        <tr><td><strong>Método de envío:</strong> {{deliveryMethod}}</td></tr>
+        <tr><td><strong>Dirección:</strong> {{address}}</td></tr>
+    </table>
+
+    <table class="items">
+        <thead>
+            <tr><th>Producto</th><th>Cantidad</th><th>Precio Unitario</th><th>Subtotal</th></tr>
+        </thead>
+        <tbody>
+            {{itemsRows}}
+        </tbody>
+    </table>
+
+    <div class="total">
+        Total: ${{total}}
+    </div>
+
+    <div class="footer">
+        Esta es una factura generada automáticamente. No requiere firma ni sello.
+    </div>
+</body>
+</html>
