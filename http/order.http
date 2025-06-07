@@ -1,6 +1,6 @@
 
 @baseUrl = http://localhost:8000/api/order
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODFjYzNmZmMxZDE2NTdlODYxODlhMTYiLCJyb2xlIjoidXNlciIsImlhdCI6MTc0NjcxNTczNiwiZXhwIjoxNzQ5MzA3NzM2fQ.BmN9GG_BphMwlgv4IgPujp2E0aKZLsVIu3YxT3musno
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2ODFjYzNmZmMxZDE2NTdlODYxODlhMTYiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NDkwMzQyOTEsImV4cCI6MTc1MTYyNjI5MX0.k9kt-_RA1s7XyAwslgf4EVLxWfE6FhPJYjR1x0sowWc
 @productId = 681e2fabd99271228561facc
 
 ### Crear una orden
@@ -11,12 +11,12 @@ Content-Type: application/json
 {
   "items": [
     {
-      "product": "681e2fabd99271228561facc",
+      "product": "6836e7aa3625cb5559a3f0ba",
       "quantity": 2,
-      "unit_price": 19.99
+      "unit_price": 15
     }
   ],
-  "total": 39.98,
+  "total": 30.00,
   "deliveryMethod": "express",
   "shippingAddress": {
     "street": "Calle Falsa",
