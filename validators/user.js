@@ -132,11 +132,12 @@ const validatorGetUser = [
 ];
 
 const validatorUpdate = [
-    check('email').optional(),
-    check('name').optional(),
-    check('surnames').optional(),
+    check('email').optional().isEmail(),
+    check('name').optional().isLength({ max: 100 }),
+    check('surnames').optional().isLength({ max: 100 }),
     check('notifications').optional(),
     check('adress').optional(),
+    check('phoneNumber').optional().isMobilePhone(),
     (req, res, next) => validateResults(req, res, next)
 ];
 

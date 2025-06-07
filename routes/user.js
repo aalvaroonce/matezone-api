@@ -34,6 +34,25 @@ const {
 } = require('../controllers/user');
 const router = express.Router();
 
+/**
+ * @openapi
+ * /api/user/:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Obtener los datos de todos los usuarios
+ *     responses:
+ *       '200':
+ *         description: Usuario obtenido
+ *       '404':
+ *         description: No se encontró el usuario
+ *       '500':
+ *         description: Error en el servidor
+ *     security:
+ *       - bearerAuth: []
+ */
+router.get('/', authMiddleware, checkRol(['admin']), getUsers);
+
 // Obtener usuario especifivo
 /**
  * @openapi
@@ -53,25 +72,6 @@ const router = express.Router();
  *       - bearerAuth: []
  */
 router.get('/profile', authMiddleware, getUser);
-
-/**
- * @openapi
- * /api/user/profile:
- *   get:
- *     tags:
- *       - User
- *     summary: Obtener los datos de todos los usuarios
- *     responses:
- *       '200':
- *         description: Usuario obtenido
- *       '404':
- *         description: No se encontró el usuario
- *       '500':
- *         description: Error en el servidor
- *     security:
- *       - bearerAuth: []
- */
-router.get('/profile', authMiddleware, checkRol(['admin']), getUsers);
 
 /**
  * @openapi

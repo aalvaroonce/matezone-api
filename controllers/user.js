@@ -21,22 +21,27 @@ const getUser = async (req, res) => {
 
 const getUsers = async (req, res) => {
     try {
-        const { name } = req.query;
+        const { name, deleted } = req.query;
         const filter = {};
 
         if (name) {
             filter.name = name;
         }
 
+        if (deleted == 'true') {
+            filter.deleted = true;
+        }
+
         const data = await userModel.find(filter).select('-attempt -status -emailCode');
 
-        if (!data) {
-            handleHttpError(res, 'USER_NOT_FOUND', 404);
+        if (!data || data.length === 0) {
+            handleHttpError(res, 'USERS_NOT_FOUND', 404);
             return;
         }
 
         res.send(data);
     } catch (err) {
+        console.log(err);
         handleHttpError(res, 'ERROR_GETTING_USER');
     }
 };
@@ -99,6 +104,16 @@ const addImage = async (req, res) => {
         const userId = req.user._id;
         const fileBuffer = req.file.buffer;
         const fileName = req.file.originalname;
+
+        const user = userModel.findById(userId);
+        if (user.urlToAvatar) {
+            const parts = user.urlToAvatar.split('/ipfs/');
+            const imageCid = parts.length > 1 ? parts[1] : null;
+            if (imageCid) {
+                deleteFromPinata(imageCid);
+            }
+        }
+
         const pinataResponse = await uploadToPinata(fileBuffer, fileName, userId);
         const ipfsFile = pinataResponse.IpfsHash;
         const ipfs = `https://${process.env.PINATA_GATEWAY_URL}/ipfs/${ipfsFile}`;
