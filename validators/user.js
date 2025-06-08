@@ -136,7 +136,7 @@ const validatorUpdate = [
     check('name').optional().isLength({ max: 100 }),
     check('surnames').optional().isLength({ max: 100 }),
     check('notifications').optional(),
-    check('adress').optional(),
+    check('address').optional(),
     check('phoneNumber').optional().isMobilePhone(),
     (req, res, next) => validateResults(req, res, next)
 ];

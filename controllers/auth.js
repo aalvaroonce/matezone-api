@@ -10,6 +10,7 @@ const fs = require('fs');
 const registerEmail = async (req, res) => {
     try {
         req = matchedData(req);
+        const filter = { email: req.email };
         const existingUser = await userModel.findOne(filter);
 
         if (existingUser) {
@@ -17,7 +18,7 @@ const registerEmail = async (req, res) => {
             return;
         }
 
-        const user = await userModel.create({ email: req.email });
+        const user = await userModel.create(filter);
 
         const data = {
             token: tokenSignToBuy(user),
