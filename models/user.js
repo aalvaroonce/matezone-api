@@ -4,7 +4,8 @@ const mongooseDelete = require('mongoose-delete');
 const UserScheme = new mongoose.Schema(
     {
         name: {
-            type: String
+            type: String,
+            default: 'Invitado'
         },
         surnames: {
             type: String
