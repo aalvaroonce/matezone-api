@@ -25,12 +25,12 @@ const getUsers = async (req, res) => {
         const filter = {};
 
         if (name) {
-            filter.name = name;
+            filter.name = { $regex: name, $options: 'i' };
         }
 
         let query;
 
-        if (deleted == 'true') {
+        if (deleted === 'true') {
             query = userModel.findDeleted(filter).select('-attempt -status -emailCode');
         } else {
             query = userModel.find(filter).select('-attempt -status -emailCode');
@@ -178,19 +178,29 @@ const deleteUser = async (req, res) => {
     }
 };
 
-// Retornar usuario
 const restoreUser = async (req, res) => {
     try {
         const { id } = matchedData(req);
-        const exist = await userModel.findOneWithDeleted({ _id: id });
-        if (!exist) {
+
+        // Find the user including soft-deleted ones
+        const user = await userModel.findOneWithDeleted({ _id: id });
+
+        if (!user) {
             return res.status(404).send('USER_NOT_FOUND');
         }
-        if (!exist.deleted) {
-            return res.status(404).send('USER_NOT_ELIMMINATED');
+
+        // Check if the user is actually deleted
+        if (!user.deleted) {
+            return res.status(400).send('USER_NOT_DELETED');
         }
-        const restored = await userModel.restore({ _id: id });
-        res.status(200).send(restored);
+
+        // Restore the user using the plugin's method
+        await user.restore();
+
+        // Fetch the freshly restored user
+        const restoredUser = await userModel.findById(id);
+
+        res.status(200).send(restoredUser);
     } catch (err) {
         console.log(err);
         res.status(500).send('ERROR_RECOVERING_USER');
