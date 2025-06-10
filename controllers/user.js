@@ -139,6 +139,12 @@ const deleteUser = async (req, res) => {
     try {
         const { id } = matchedData(req);
         const { logic } = req.query;
+        const { role, _id } = req.user;
+
+        if (role != 'admin' || _id != id) {
+            handleHttpError(res, 400, 'ERROR_NOT_ALLOWED');
+        }
+
         if (logic === 'true') {
             const deleteLogical = await userModel.delete({ _id: id });
             if (!deleteLogical) {
