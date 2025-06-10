@@ -14,8 +14,8 @@ Authorization: Bearer {{token}}
 {
     "name": "Yerba ultra mega guay",
     "description": "Una yerba que te coloca solo con olerla",
-    "price": 99.99,
-    "discount": 10,
+    "price": 15,
+    "discount": 0,
     "stock": 59,
     "category": "yerbas",
     "attributes": [
@@ -32,7 +32,6 @@ GET {{baseUrl}} HTTP/1.1
 GET {{baseUrl}}?minPrice=10\&maxPrice=1000\&minRating=4\&sortBy=priceDesc\&category=Yerbas HTTP/1.1
 
 ### Obtener producto por ID
-
 GET {{baseUrl}}/{{productId}} HTTP/1.1
 
 ### Actualizar producto

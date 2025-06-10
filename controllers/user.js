@@ -28,11 +28,15 @@ const getUsers = async (req, res) => {
             filter.name = name;
         }
 
-        if (deleted == 'true') {
-            filter.deleted = true;
+        let query;
+
+        if (deleted === 'true') {
+            query = userModel.findDeleted(filter).select('-attempt -status -emailCode');
+        } else {
+            query = userModel.find(filter).select('-attempt -status -emailCode');
         }
 
-        const data = await userModel.find(filter).select('-attempt -status -emailCode');
+        const data = await query;
 
         if (!data || data.length === 0) {
             handleHttpError(res, 'USERS_NOT_FOUND', 404);

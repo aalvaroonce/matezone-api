@@ -69,7 +69,7 @@ const createProduct = async (req, res) => {
 // Obtener productos con filtros
 const getProducts = async (req, res) => {
     try {
-        const { minPrice, maxPrice, minRating, sortBy, category, name } = req.query;
+        const { minPrice, maxPrice, minRating, sortBy, category, name, deleted } = req.query;
 
         const filter = {};
 
@@ -101,11 +101,21 @@ const getProducts = async (req, res) => {
         else if (sortBy === 'priceAsc') sort = { price: 1 };
         else if (sortBy === 'priceDesc') sort = { price: -1 };
 
-        // Búsqueda inicial
-        let products = await productModel
-            .find(filter)
-            .sort(sort)
-            .populate('reviews.reviewTexts.user', 'name');
+        let query;
+
+        if (deleted == 'true') {
+            query = productModel
+                .findDeleted(filter)
+                .sort(sort)
+                .populate('reviews.reviewTexts.user', 'name');
+        } else {
+            query = productModel
+                .find(filter)
+                .sort(sort)
+                .populate('reviews.reviewTexts.user', 'name');
+        }
+
+        let products = await query;
 
         // Filtrado final por rating promedio
         if (minRating) {
