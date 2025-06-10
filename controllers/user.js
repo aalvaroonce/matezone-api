@@ -30,7 +30,7 @@ const getUsers = async (req, res) => {
 
         let query;
 
-        if (deleted === 'true') {
+        if (deleted == 'true') {
             query = userModel.findDeleted(filter).select('-attempt -status -emailCode');
         } else {
             query = userModel.find(filter).select('-attempt -status -emailCode');
