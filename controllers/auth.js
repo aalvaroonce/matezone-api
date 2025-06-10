@@ -3,7 +3,7 @@ const { tokenSign, tokenSignToBuy } = require('../utils/handleToken');
 const { encrypt, compare } = require('../utils/handlePassword');
 const { generateVerificationCode, sendEmail } = require('../utils/handleMails');
 const { handleHttpError } = require('../utils/handleError');
-const { userModel } = require('../models');
+const { userModel, loginAttemptModel } = require('../models');
 const path = require('path');
 const fs = require('fs');
 
