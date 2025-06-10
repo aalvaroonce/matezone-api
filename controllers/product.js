@@ -87,7 +87,7 @@ const getProducts = async (req, res) => {
         }
 
         if (name) {
-            filter.name = name;
+            filter.name = { $regex: name, $options: 'i' };
         }
 
         // Filtrado por rating (sólo existencia de reseñas)

@@ -75,6 +75,72 @@ router.get('/profile', authMiddleware, getUser);
 
 /**
  * @openapi
+ * /api/user/login-attempts:
+ *   get:
+ *     tags:
+ *       - User
+ *     summary: Obtener los intentos de login fallidos
+ *     description: Retorna una lista de intentos fallidos de login registrados en el sistema. Solo accesible para administradores.
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Lista de intentos de login fallidos obtenida exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     example: "66534ab27e56c1c8b888e334"
+ *                   email:
+ *                     type: string
+ *                     example: "ejemplo@correo.com"
+ *                   ip:
+ *                     type: string
+ *                     example: "192.168.1.10"
+ *                   userAgent:
+ *                     type: string
+ *                     example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
+ *                   reason:
+ *                     type: string
+ *                     example: "INVALID_PASSWORD"
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2025-05-26T18:13:45.123Z"
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *                     example: "2025-05-26T18:13:45.123Z"
+ *       '403':
+ *         description: Acceso denegado. Solo administradores pueden consultar esta ruta.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ACCESS_DENIED"
+ *       '500':
+ *         description: Error interno del servidor.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "ERROR_GET_FAILED_LOGINS"
+ */
+router.get('/login-attempts', authMiddleware, checkRol(['admin']), getLoginAttempts);
+
+/**
+ * @openapi
  * /api/user/register-email:
  *   post:
  *     tags:
@@ -452,71 +518,5 @@ router.patch(
  *       - bearerAuth: []
  */
 router.patch('/restore/:id', authMiddleware, checkRol(['admin']), validatorGetUser, restoreUser);
-
-/**
- * @openapi
- * /api/user/login-attempts:
- *   get:
- *     tags:
- *       - User
- *     summary: Obtener los intentos de login fallidos
- *     description: Retorna una lista de intentos fallidos de login registrados en el sistema. Solo accesible para administradores.
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       '200':
- *         description: Lista de intentos de login fallidos obtenida exitosamente.
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                     example: "66534ab27e56c1c8b888e334"
- *                   email:
- *                     type: string
- *                     example: "ejemplo@correo.com"
- *                   ip:
- *                     type: string
- *                     example: "192.168.1.10"
- *                   userAgent:
- *                     type: string
- *                     example: "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
- *                   reason:
- *                     type: string
- *                     example: "INVALID_PASSWORD"
- *                   createdAt:
- *                     type: string
- *                     format: date-time
- *                     example: "2025-05-26T18:13:45.123Z"
- *                   updatedAt:
- *                     type: string
- *                     format: date-time
- *                     example: "2025-05-26T18:13:45.123Z"
- *       '403':
- *         description: Acceso denegado. Solo administradores pueden consultar esta ruta.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "ACCESS_DENIED"
- *       '500':
- *         description: Error interno del servidor.
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: "ERROR_GET_FAILED_LOGINS"
- */
-router.get('/login-attempts', authMiddleware, checkRol(['admin']), getLoginAttempts);
 
 module.exports = router;
