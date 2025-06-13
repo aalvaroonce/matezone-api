@@ -29,7 +29,7 @@ GET {{baseUrl}} HTTP/1.1
 
 ### Listar productos con filtros
 
-GET {{baseUrl}}?name=mate HTTP/1.1
+GET {{baseUrl}}?name=yerba%20playadito HTTP/1.1
 
 ### Obtener producto por ID
 GET {{baseUrl}}/{{productId}} HTTP/1.1
