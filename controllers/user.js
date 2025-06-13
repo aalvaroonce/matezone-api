@@ -141,8 +141,8 @@ const deleteUser = async (req, res) => {
         const { logic } = req.query;
         const { role, _id } = req.user;
 
-        if (role != 'admin' || _id != id) {
-            handleHttpError(res, 400, 'ERROR_NOT_ALLOWED');
+        if (role != 'admin' && _id != id) {
+            return res.status(400).send('ERROR_NOT_ALLOWED');
         }
 
         if (logic === 'true') {
