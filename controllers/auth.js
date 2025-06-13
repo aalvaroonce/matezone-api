@@ -10,7 +10,7 @@ const fs = require('fs');
 const registerEmail = async (req, res) => {
     try {
         req = matchedData(req);
-        const filter = { email: req.email };
+        const filter = { email: req.email, status: 1 };
         const existingUser = await userModel.findOne(filter);
 
         if (existingUser) {
