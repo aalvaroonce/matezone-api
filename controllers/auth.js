@@ -106,16 +106,17 @@ const registerCtrl = async (req, res) => {
 
 const loginCtrl = async (req, res) => {
     try {
-        req = matchedData(req);
-        req.email = req.email.toLowerCase();
+        let { email } = matchedData(req);
+        const { password } = matchedData(req);
+        email = email.toLowerCase();
 
         const user = await userModel
-            .findOne({ email: req.email })
+            .findOne({ email: email })
             .select('password name role email attempt status');
 
         if (!user) {
             await loginAttemptModel.create({
-                email: req.email,
+                email: email,
                 ip: req.ip,
                 userAgent: req.headers['user-agent'],
                 reason: 'USER_NOT_EXIST'
@@ -130,7 +131,7 @@ const loginCtrl = async (req, res) => {
 
             if (timeSinceLastTry < THIRTY_MINUTES) {
                 await loginAttemptModel.create({
-                    email: req.email,
+                    email: email,
                     ip: req.ip,
                     userAgent: req.headers['user-agent'],
                     reason: 'TOO_MANY_ATTEMPTS_WAIT_30_MIN'
@@ -139,12 +140,12 @@ const loginCtrl = async (req, res) => {
                 return;
             }
 
-            await userModel.updateOne({ email: req.email }, { $set: { attempt: 5 } });
+            await userModel.updateOne({ email: email }, { $set: { attempt: 5 } });
         }
 
         if (user.status === 0) {
             await loginAttemptModel.create({
-                email: req.email,
+                email: email,
                 ip: req.ip,
                 userAgent: req.headers['user-agent'],
                 reason: 'USER_NOT_VALIDATED'
@@ -167,21 +168,21 @@ const loginCtrl = async (req, res) => {
                 subject: 'Demasiados intentos de acceso en Matezone',
                 html: htmlTemplate,
                 from: process.env.EMAIL,
-                to: req.email
+                to: email
             });
 
             return;
         }
 
         const hashPassword = user.password;
-        const check = await compare(req.password, hashPassword);
+        const check = await compare(password, hashPassword);
 
         if (!check) {
             const updatedAttempt = user.attempt + 1;
-            await userModel.updateOne({ email: req.email }, { $set: { attempt: updatedAttempt } });
+            await userModel.updateOne({ email: email }, { $set: { attempt: updatedAttempt } });
 
             await loginAttemptModel.create({
-                email: req.email,
+                email: email,
                 ip: req.ip,
                 userAgent: req.headers['user-agent'],
                 reason: 'INVALID_PASSWORD'
@@ -202,7 +203,7 @@ const loginCtrl = async (req, res) => {
                     to: user.email
                 });
 
-                await userModel.updateOne({ email: req.email }, { $set: { lastTry: Date.now() } });
+                await userModel.updateOne({ email: email }, { $set: { lastTry: Date.now() } });
             }
 
             handleHttpError(res, 'INVALID_PASSWORD', 401);
@@ -210,7 +211,7 @@ const loginCtrl = async (req, res) => {
         }
 
         if (user.attempt > 0) {
-            await userModel.updateOne({ email: req.email }, { $set: { attempt: 0 } });
+            await userModel.updateOne({ email: email }, { $set: { attempt: 0 } });
         }
 
         user.set('password', undefined, { strict: false });
