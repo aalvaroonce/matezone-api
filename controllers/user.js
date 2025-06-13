@@ -1,5 +1,5 @@
 const { matchedData } = require('express-validator');
-const { userModel } = require('../models');
+const { userModel, loginAttemptModel } = require('../models');
 const { compare, encrypt } = require('../utils/handlePassword');
 const { uploadToPinata, deleteFromPinata } = require('../utils/handleUploadIPFS');
 const { handleHttpError } = require('../utils/handleError');
